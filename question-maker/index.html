@@ -332,6 +332,30 @@ textarea:focus, input:focus, select:focus {
   height: 24px;
 }
 
+/* 모범 요약문 */
+.summary-card .card-title { color: var(--green); }
+.summary-card .card-title .num { background: var(--green); }
+.summary-body {
+  background: var(--greenlight);
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.summary-en {
+  font-size: .96rem;
+  line-height: 1.65;
+  color: #14532d;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.summary-ko {
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px dashed #86efac;
+  font-size: .87rem;
+  color: #15803d;
+  line-height: 1.6;
+}
+
 .note {
   font-size: .8rem;
   color: var(--gray400);
@@ -408,15 +432,17 @@ textarea:focus, input:focus, select:focus {
   .q { padding: 7pt 0; page-break-inside: avoid; }
   .q-stmt { font-size: 10.5pt; }
   .q-blank { font-size: 10pt; color: #000; }
-  .badge, .q-evi, .tq, .badge-trap {
+  .badge, .q-evi, .tq, .badge-trap, .summary-body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .tq { page-break-inside: avoid; margin-bottom: 8pt; }
   .tq-lines { display: block !important; }
   .tq-lines div { height: 20pt; }
+  .summary-card { page-break-inside: avoid; }
   .print-hide-answers .q-ans,
-  .print-hide-answers .tq-hint { display: none !important; }
+  .print-hide-answers .tq-hint,
+  .print-hide-answers #summaryCard { display: none !important; }
 }
 </style>
 </head>
@@ -424,7 +450,7 @@ textarea:focus, input:focus, select:focus {
 
 <header class="site-header no-print">
   <h1>📘 영어 지문 문제 생성기</h1>
-  <p>지문을 붙여넣으면 True/False 문항과 사고 확장 질문을 만들어 드립니다</p>
+  <p>지문을 붙여넣으면 True/False 문항·사고 확장 질문·모범 요약문을 만들어 드립니다</p>
 </header>
 
 <div class="container">
@@ -509,6 +535,15 @@ textarea:focus, input:focus, select:focus {
       <div class="card-title"><span class="num">PART 2</span> Think Further</div>
       <p class="card-desc">정답이 정해져 있지 않은 질문입니다. 자신의 생각을 자유롭게 써 보세요.</p>
       <div id="thinkList"></div>
+    </div>
+
+    <div class="card summary-card" id="summaryCard">
+      <div class="card-title"><span class="num">SUMMARY</span> 모범 요약문</div>
+      <p class="card-desc no-print">지문의 핵심을 요약한 예시입니다. (‘정답·근거 보기’를 켜면 표시됩니다)</p>
+      <div class="summary-body">
+        <div class="summary-en" id="summaryEn"></div>
+        <div class="summary-ko" id="summaryKo"></div>
+      </div>
     </div>
 
   </div>
@@ -652,12 +687,23 @@ function render(data, passage) {
     tlist.appendChild(box);
   });
 
+  /* ── 모범 요약문 ── */
+  const summary = data.summary || {};
+  const card = document.getElementById('summaryCard');
+  const hasSummary = !!(summary.english || summary.korean);
+  card.style.display = hasSummary ? '' : 'none';
+  document.getElementById('summaryEn').textContent = summary.english || '';
+  document.getElementById('summaryKo').textContent = summary.korean || '';
+
   toggleAnswers();
 }
 
 function toggleAnswers() {
   const show = document.getElementById('showAns').checked;
   document.querySelectorAll('.q-ans, .tq-hint').forEach(function (e) { e.hidden = !show; });
+  const card = document.getElementById('summaryCard');
+  // 요약문이 없으면(display:none) 그대로 두고, 있을 때만 정답 토글에 맞춰 표시
+  if (card.style.display !== 'none') card.hidden = !show;
 }
 
 /* 인쇄: withAnswers = true 면 교사용(정답·근거·힌트 포함) */
@@ -700,6 +746,13 @@ function copyAll() {
     if (q.hint) out += '   보조 발문: ' + q.hint + '\n';
     out += '\n';
   });
+
+  const s = lastData.summary || {};
+  if (s.english || s.korean) {
+    out += '\n[모범 요약문]\n';
+    if (s.english) out += s.english + '\n';
+    if (s.korean) out += '(' + s.korean + ')\n';
+  }
 
   navigator.clipboard.writeText(out.trim()).then(showToast);
 }
