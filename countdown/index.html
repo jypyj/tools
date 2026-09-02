@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수업용 카운트다운 타이머</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  background: #1a1a2e;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* 제목 */
+h1 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  opacity: 0.6;
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+}
+
+/* 타이머 표시 */
+#timer-display {
+  font-size: clamp(8rem, 22vw, 16rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin-bottom: 40px;
+  transition: color 0.3s;
+}
+#timer-display.warning { color: #e74c3c; }
+#timer-display.running { color: #2ecc71; }
+#timer-display.paused  { color: #f39c12; }
+#timer-display.done    { color: #e74c3c; animation: blink 0.6s infinite; }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* 입력 영역 */
+#input-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+#input-area label {
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+#input-area input {
+  width: 80px;
+  padding: 12px 8px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+#input-area input::-webkit-outer-spin-button,
+#input-area input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#input-area input:focus { border-color: #2ecc71; }
+.colon {
+  font-size: 2rem;
+  font-weight: 800;
+  opacity: 0.4;
+}
+
+/* 버튼 영역 */
+#btn-area {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+button {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+button:hover { transform: translateY(-2px); }
+button:active { transform: translateY(0); }
+
+#btn-start {
+  background: #2ecc71;
+  color: #fff;
+}
+#btn-pause {
+  background: #f39c12;
+  color: #fff;
+  display: none;
+}
+#btn-reset {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+#btn-stop-alarm {
+  background: #e74c3c;
+  color: #fff;
+  display: none;
+  animation: pulse 0.8s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.5); }
+  50% { box-shadow: 0 0 20px 8px rgba(231,76,60,0.3); }
+}
+
+/* 프리셋 */
+#presets {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.preset-btn {
+  padding: 10px 20px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.preset-btn:hover {
+  border-color: #2ecc71;
+  color: #2ecc71;
+  background: rgba(46,204,113,0.08);
+  transform: translateY(-1px);
+}
+
+/* 프로그레스 바 */
+#progress-wrap {
+  width: min(80vw, 600px);
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+#progress-bar {
+  height: 100%;
+  background: #2ecc71;
+  border-radius: 3px;
+  width: 100%;
+  transition: width 0.5s linear, background 0.3s;
+}
+#progress-bar.warning { background: #e74c3c; }
+
+/* 전체화면 버튼 */
+#btn-fullscreen {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  padding: 8px 14px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.5);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#btn-fullscreen:hover { border-color: #fff; color: #fff; }
+</style>
+</head>
+<body>
+
+<button id="btn-fullscreen" onclick="toggleFullscreen()">전체화면</button>
+
+<h1>COUNTDOWN TIMER</h1>
+
+<div id="timer-display">00:00</div>
+
+<div id="progress-wrap">
+  <div id="progress-bar"></div>
+</div>
+
+<div id="input-area">
+  <label>분</label>
+  <input type="number" id="inp-min" value="5" min="0" max="99">
+  <span class="colon">:</span>
+  <label>초</label>
+  <input type="number" id="inp-sec" value="0" min="0" max="59">
+</div>
+
+<div id="presets">
+  <button class="preset-btn" onclick="setPreset(1,0)">1분</button>
+  <button class="preset-btn" onclick="setPreset(3,0)">3분</button>
+  <button class="preset-btn" onclick="setPreset(5,0)">5분</button>
+  <button class="preset-btn" onclick="setPreset(10,0)">10분</button>
+  <button class="preset-btn" onclick="setPreset(15,0)">15분</button>
+  <button class="preset-btn" onclick="setPreset(20,0)">20분</button>
+  <button class="preset-btn" onclick="setPreset(0,30)">30초</button>
+</div>
+
+<div id="btn-area">
+  <button id="btn-start" onclick="startTimer()">시작</button>
+  <button id="btn-pause" onclick="pauseTimer()">일시정지</button>
+  <button id="btn-reset" onclick="resetTimer()">초기화</button>
+  <button id="btn-stop-alarm" onclick="stopAlarm()">알림 끄기</button>
+</div>
+
+<script>
+var totalSeconds = 0;
+var remainSeconds = 0;
+var timerInterval = null;
+var isRunning = false;
+var isPaused = false;
+var audioCtx = null;
+var alarmOsc = null;
+var alarmGain = null;
+
+var display = document.getElementById('timer-display');
+var progressBar = document.getElementById('progress-bar');
+var btnStart = document.getElementById('btn-start');
+var btnPause = document.getElementById('btn-pause');
+var btnReset = document.getElementById('btn-reset');
+var btnStopAlarm = document.getElementById('btn-stop-alarm');
+var inputArea = document.getElementById('input-area');
+var presetsArea = document.getElementById('presets');
+
+function formatTime(sec) {
+  var m = Math.floor(sec / 60);
+  var s = sec % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function updateDisplay() {
+  display.textContent = formatTime(remainSeconds);
+
+  // 프로그레스 바
+  if (totalSeconds > 0) {
+    var pct = remainSeconds / totalSeconds * 100;
+    progressBar.style.width = pct + '%';
+    if (pct <= 20) {
+      progressBar.classList.add('warning');
+    } else {
+      progressBar.classList.remove('warning');
+    }
+  }
+
+  // 20% 이하일 때 빨간색 경고
+  if (isRunning && !isPaused && totalSeconds > 0 && remainSeconds <= totalSeconds * 0.2 && remainSeconds > 0) {
+    display.className = 'warning';
+  }
+}
+
+function setPreset(m, s) {
+  if (isRunning) return;
+  document.getElementById('inp-min').value = m;
+  document.getElementById('inp-sec').value = s;
+  remainSeconds = m * 60 + s;
+  totalSeconds = remainSeconds;
+  updateDisplay();
+  display.className = '';
+}
+
+function startTimer() {
+  if (isPaused) {
+    // 일시정지에서 재개
+    isPaused = false;
+    isRunning = true;
+    display.className = 'running';
+    btnStart.style.display = 'none';
+    btnPause.style.display = '';
+    timerInterval = setInterval(tick, 1000);
+    return;
+  }
+
+  var m = parseInt(document.getElementById('inp-min').value) || 0;
+  var s = parseInt(document.getElementById('inp-sec').value) || 0;
+  totalSeconds = m * 60 + s;
+  if (totalSeconds <= 0) return;
+
+  remainSeconds = totalSeconds;
+  isRunning = true;
+  isPaused = false;
+  display.className = 'running';
+  updateDisplay();
+
+  inputArea.style.opacity = '0.3';
+  inputArea.style.pointerEvents = 'none';
+  presetsArea.style.opacity = '0.3';
+  presetsArea.style.pointerEvents = 'none';
+  btnStart.style.display = 'none';
+  btnPause.style.display = '';
+  btnStopAlarm.style.display = 'none';
+
+  timerInterval = setInterval(tick, 1000);
+}
+
+function tick() {
+  remainSeconds--;
+  if (remainSeconds <= 0) {
+    remainSeconds = 0;
+    clearInterval(timerInterval);
+    timerInterval = null;
+    isRunning = false;
+    display.className = 'done';
+    updateDisplay();
+    btnPause.style.display = 'none';
+    btnStopAlarm.style.display = '';
+    playAlarm();
+    return;
+  }
+  updateDisplay();
+}
+
+function pauseTimer() {
+  if (!isRunning || isPaused) return;
+  isPaused = true;
+  clearInterval(timerInterval);
+  timerInterval = null;
+  display.className = 'paused';
+  btnPause.style.display = 'none';
+  btnStart.style.display = '';
+  btnStart.textContent = '계속';
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  isRunning = false;
+  isPaused = false;
+  stopAlarm();
+
+  var m = parseInt(document.getElementById('inp-min').value) || 0;
+  var s = parseInt(document.getElementById('inp-sec').value) || 0;
+  totalSeconds = m * 60 + s;
+  remainSeconds = totalSeconds;
+
+  display.className = '';
+  updateDisplay();
+
+  inputArea.style.opacity = '1';
+  inputArea.style.pointerEvents = '';
+  presetsArea.style.opacity = '1';
+  presetsArea.style.pointerEvents = '';
+  btnStart.style.display = '';
+  btnStart.textContent = '시작';
+  btnPause.style.display = 'none';
+  btnStopAlarm.style.display = 'none';
+  progressBar.classList.remove('warning');
+}
+
+/* ===== 알림음 (Web Audio API) ===== */
+function playAlarm() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    alarmGain = audioCtx.createGain();
+    alarmGain.connect(audioCtx.destination);
+    alarmGain.gain.value = 0.4;
+
+    var playBeep = function(time, freq, dur) {
+      var osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      osc.connect(alarmGain);
+      osc.start(time);
+      osc.stop(time + dur);
+    };
+
+    // 반복 알림 패턴: 삐-삐-삐 (0.8초 간격으로 반복)
+    var now = audioCtx.currentTime;
+    for (var round = 0; round < 8; round++) {
+      var base = now + round * 1.2;
+      playBeep(base, 880, 0.15);
+      playBeep(base + 0.2, 880, 0.15);
+      playBeep(base + 0.4, 1100, 0.25);
+    }
+  } catch(e) {}
+}
+
+function stopAlarm() {
+  if (audioCtx) {
+    audioCtx.close().catch(function(){});
+    audioCtx = null;
+  }
+  btnStopAlarm.style.display = 'none';
+  display.className = '';
+}
+
+/* ===== 전체화면 ===== */
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(function(){});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+/* ===== 키보드 단축키 ===== */
+document.addEventListener('keydown', function(e) {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (btnStopAlarm.style.display !== 'none') { stopAlarm(); resetTimer(); }
+    else if (isRunning && !isPaused) pauseTimer();
+    else startTimer();
+  }
+  if (e.code === 'KeyR') resetTimer();
+  if (e.code === 'KeyF') toggleFullscreen();
+  if (e.code === 'Escape' && btnStopAlarm.style.display !== 'none') stopAlarm();
+});
+
+/* 초기 표시 */
+(function() {
+  var m = parseInt(document.getElementById('inp-min').value) || 0;
+  var s = parseInt(document.getElementById('inp-sec').value) || 0;
+  totalSeconds = m * 60 + s;
+  remainSeconds = totalSeconds;
+  updateDisplay();
+})();
+</script>
+
+</body>
+</html>

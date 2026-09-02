@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여름방학 탐구활동 제출 | 혜화고</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue: #2563eb;
+  --bluedark: #1d4ed8;
+  --bluelight: #eff6ff;
+  --green: #16a34a;
+  --amber: #d97706;
+  --red: #dc2626;
+  --gray50: #f8fafc;
+  --gray100: #f1f5f9;
+  --gray200: #e2e8f0;
+  --gray400: #94a3b8;
+  --gray600: #475569;
+  --gray800: #1e293b;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+}
+
+body {
+  font-family: 'Malgun Gothic','맑은 고딕',Apple SD Gothic Neo,sans-serif;
+  background: var(--gray100);
+  color: var(--gray800);
+  line-height: 1.65;
+  font-size: 15px;
+}
+
+.site-header {
+  background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
+  color: #fff;
+  padding: 32px 24px 28px;
+  text-align: center;
+}
+.site-header h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.5px; }
+.site-header p { margin-top: 6px; opacity: .85; font-size: .88rem; }
+
+.container { max-width: 680px; margin: 0 auto; padding: 20px 16px 40px; }
+
+.card {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0c4a6e;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--gray200);
+}
+.card-title .num {
+  background: var(--blue);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 99px;
+  letter-spacing: .3px;
+  flex-shrink: 0;
+}
+.card-desc {
+  font-size: .85rem;
+  color: var(--gray600);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+/* ── 안내 배너 ── */
+.notice {
+  background: #fffbeb;
+  border: 1.5px solid #fcd34d;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  font-size: .84rem;
+  color: #92400e;
+  line-height: 1.7;
+}
+.notice strong { display: block; margin-bottom: 4px; font-size: .88rem; }
+.notice ul { margin: 6px 0 0 18px; }
+.notice li { margin-bottom: 2px; }
+
+/* ── 입력 ── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 12px; }
+.form-group { margin-bottom: 14px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-group label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--gray600);
+  margin-bottom: 5px;
+}
+.form-group label .opt { font-weight: 400; color: var(--gray400); font-size: .76rem; }
+.form-group .hint {
+  font-size: .76rem;
+  color: var(--gray400);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.form-group select,
+.form-group input[type=text],
+.form-group input[type=date],
+.form-group textarea {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--gray200);
+  border-radius: 8px;
+  font: inherit;
+  font-size: .9rem;
+  background: var(--gray50);
+  color: var(--gray800);
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-group textarea { resize: vertical; min-height: 110px; line-height: 1.7; }
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  background: #fff;
+}
+
+.counter { font-size: .74rem; color: var(--gray400); text-align: right; margin-top: 4px; }
+.counter.ok { color: var(--green); font-weight: 700; }
+.counter.short { color: var(--amber); }
+
+/* ── 활동 유형 선택 ── */
+.type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.type-btn {
+  border: 2px solid var(--gray200);
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .18s;
+  user-select: none;
+  background: var(--gray50);
+}
+.type-btn:hover { transform: translateY(-1px); border-color: var(--gray400); }
+.type-btn .t-icon { font-size: 1.6rem; display: block; margin-bottom: 4px; }
+.type-btn .t-label { font-weight: 700; font-size: .9rem; }
+.type-btn .t-sub { font-size: .74rem; color: var(--gray400); margin-top: 2px; line-height: 1.4; }
+.type-btn.active {
+  border-color: var(--blue);
+  background: var(--bluelight);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+.type-btn.active .t-label { color: var(--bluedark); }
+
+/* ── 유형별 추가 입력 ── */
+.type-extra { display: none; margin-top: 16px; padding-top: 16px; border-top: 1.5px dashed var(--gray200); }
+.type-extra.show { display: block; animation: fadeIn .25s ease; }
+
+/* ── 버튼 ── */
+.btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-submit {
+  background: linear-gradient(135deg, var(--blue), var(--bluedark));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37,99,235,.3);
+}
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,.4); }
+.btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-reset {
+  background: var(--gray200);
+  color: var(--gray600);
+  margin-top: 10px;
+}
+.btn-reset:hover { background: #cbd5e1; }
+
+/* ── 결과 화면 ── */
+.result {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+  animation: fadeIn .5s ease;
+}
+.result.show { display: block; }
+.result .check-circle {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, #48BB78, #38A169);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  animation: popIn .5s ease;
+}
+.result .check-circle svg { width: 36px; height: 36px; stroke: #fff; stroke-width: 3; fill: none; }
+.result h2 { font-size: 1.3rem; color: #0c4a6e; margin-bottom: 8px; }
+.result p { font-size: .88rem; color: var(--gray600); margin-bottom: 6px; }
+.result .info-box {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 14px 24px;
+  background: var(--bluelight);
+  border-radius: 10px;
+  font-size: .88rem;
+  color: #0c4a6e;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.8;
+}
+.result .btn-reset { margin-top: 24px; width: auto; display: inline-block; padding: 12px 32px; }
+
+.error-msg {
+  color: var(--red);
+  font-size: .8rem;
+  margin: 8px 0;
+  display: none;
+  text-align: center;
+  line-height: 1.6;
+}
+.error-msg.show { display: block; }
+
+.draft-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #ecfdf5;
+  border: 1.5px solid #6ee7b7;
+  color: #065f46;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: .8rem;
+  margin-bottom: 14px;
+}
+.draft-bar.show { display: flex; }
+.draft-bar button {
+  border: none; background: #059669; color: #fff;
+  padding: 6px 14px; border-radius: 99px;
+  font: inherit; font-size: .76rem; font-weight: 700; cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toast {
+  position: fixed; top: 18px; right: 18px;
+  background: var(--green); color: #fff;
+  padding: 10px 20px; border-radius: 99px;
+  font-size: .82rem; font-weight: 700;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .25s, transform .25s; z-index: 500;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 600px) {
+  .type-grid { grid-template-columns: 1fr 1fr; }
+  .site-header h1 { font-size: 1.3rem; }
+  .form-row { grid-template-columns: 1fr 1fr 2fr; gap: 8px; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">제출 완료!</div>
+
+<header class="site-header">
+  <h1>여름방학 탐구활동 제출</h1>
+  <p>2026학년도 여름방학 · 활동 하나당 한 번씩 제출하세요</p>
+</header>
+
+<div class="container">
+
+  <div id="formArea">
+
+    <div class="draft-bar" id="draftBar">
+      <span>작성하던 내용이 저장되어 있어요.</span>
+      <button onclick="loadDraft()">이어서 쓰기</button>
+    </div>
+
+    <div class="notice">
+      <strong>작성 전에 꼭 읽어주세요</strong>
+      <ul>
+        <li>활동이 여러 개면 <b>활동마다 따로 제출</b>하세요. (제출 후 &lsquo;다른 활동 추가&rsquo; 버튼)</li>
+        <li>구체적인 사실 위주로 쓰세요. 책 제목, 자료 출처, 숫자, 직접 관찰한 내용이 있으면 훨씬 좋습니다.</li>
+        <li>제출한 내용이 그대로 생기부에 들어가지는 않지만, <b>여기 쓴 내용이 기록의 재료</b>가 됩니다.</li>
+        <li>입력하던 내용은 이 기기에 자동 저장되니, 중간에 창을 닫아도 괜찮습니다.</li>
+      </ul>
+    </div>
+
+    <!-- STEP 1: 학생 정보 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num">STEP 1</span>
+        학생 정보
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="classNum">반</label>
+          <select id="classNum">
+            <option value="">선택</option>
+            <option value="1">1반</option>
+            <option value="2">2반</option>
+            <option value="3">3반</option>
+            <option value="4">4반</option>
+            <option value="5">5반</option>
+            <option value="6">6반</option>
+            <option value="7">7반</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="number">번호</label>
+          <input type="text" id="number" placeholder="예: 15" inputmode="numeric" maxlength="3">
+        </div>
+        <div class="form-group">
+          <label for="sname">이름</label>
+          <input type="text" id="sname" placeholder="이름을 입력하세요">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: 활동 유형 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num">STEP 2</span>
+        활동 유형
+      </div>
+      <p class="card-desc">이번에 제출할 활동이 어떤 종류인지 골라주세요. 유형에 따라 추가로 물어보는 항목이 달라집니다.</p>
+
+      <div class="type-grid">
+        <div class="type-btn" data-type="독서탐구" onclick="setType(this)">
+          <span class="t-icon">&#x1F4DA;</span>
+          <div class="t-label">독서탐구</div>
+          <div class="t-sub">책을 읽고 넓힌 탐구</div>
+        </div>
+        <div class="type-btn" data-type="진로탐구" onclick="setType(this)">
+          <span class="t-icon">&#x1F9ED;</span>
+          <div class="t-label">진로탐구</div>
+          <div class="t-sub">학과·직업·전공 조사</div>
+        </div>
+        <div class="type-btn" data-type="데이터조사" onclick="setType(this)">
+          <span class="t-icon">&#x1F4CA;</span>
+          <div class="t-label">데이터 조사</div>
+          <div class="t-sub">통계·설문·자료 분석</div>
+        </div>
+        <div class="type-btn" data-type="실험관찰" onclick="setType(this)">
+          <span class="t-icon">&#x1F52C;</span>
+          <div class="t-label">실험·관찰</div>
+          <div class="t-sub">직접 해보고 기록</div>
+        </div>
+        <div class="type-btn" data-type="제작활동" onclick="setType(this)">
+          <span class="t-icon">&#x1F6E0;</span>
+          <div class="t-label">제작 활동</div>
+          <div class="t-sub">앱·영상·작품·글쓰기</div>
+        </div>
+        <div class="type-btn" data-type="기타" onclick="setType(this)">
+          <span class="t-icon">&#x2728;</span>
+          <div class="t-label">기타</div>
+          <div class="t-sub">봉사·캠프·대회 등</div>
+        </div>
+      </div>
+
+      <!-- 독서탐구 -->
+      <div class="type-extra" id="extra-독서탐구">
+        <div class="form-group">
+          <label for="bookTitle">읽은 책 (제목 / 지은이)</label>
+          <div class="hint">여러 권이면 줄바꿈으로 나눠 적으세요. 예) 이기적 유전자 / 리처드 도킨스</div>
+          <textarea id="bookTitle" style="min-height:70px" placeholder="책 제목 / 지은이"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="bookQuote">인상 깊은 구절이나 개념 <span class="opt">(선택)</span></label>
+          <textarea id="bookQuote" style="min-height:70px" placeholder="가장 기억에 남은 문장이나 개념, 그리고 왜 그런지"></textarea>
+        </div>
+      </div>
+
+      <!-- 진로탐구 -->
+      <div class="type-extra" id="extra-진로탐구">
+        <div class="form-group">
+          <label for="careerField">관심 분야 / 학과 / 직업</label>
+          <input type="text" id="careerField" placeholder="예: 생명공학과, 데이터 분석가">
+        </div>
+        <div class="form-group">
+          <label for="careerSource">어떤 방법으로 알아봤나요?</label>
+          <div class="hint">학과 홈페이지, 전공 강의 영상, 인터뷰, 진로 체험, 관련 도서 등</div>
+          <textarea id="careerSource" style="min-height:70px" placeholder="찾아본 자료나 방법을 구체적으로"></textarea>
+        </div>
+      </div>
+
+      <!-- 데이터조사 -->
+      <div class="type-extra" id="extra-데이터조사">
+        <div class="form-group">
+          <label for="dataQuestion">알아보고 싶었던 질문</label>
+          <input type="text" id="dataQuestion" placeholder="예: 우리 학교 학생들의 수면 시간은 학년별로 다를까?">
+        </div>
+        <div class="form-group">
+          <label for="dataSource">자료 출처 / 수집 방법</label>
+          <div class="hint">통계청, KOSIS, 설문 조사(응답자 수), 공공데이터포털 등 구체적으로</div>
+          <textarea id="dataSource" style="min-height:70px" placeholder="어디서 어떻게 자료를 모았는지"></textarea>
+        </div>
+      </div>
+
+      <!-- 실험관찰 -->
+      <div class="type-extra" id="extra-실험관찰">
+        <div class="form-group">
+          <label for="expHypo">가설 또는 알아보려 한 것</label>
+          <input type="text" id="expHypo" placeholder="예: 물의 온도가 높을수록 설탕이 빨리 녹을 것이다">
+        </div>
+        <div class="form-group">
+          <label for="expMethod">실험·관찰 방법</label>
+          <div class="hint">무엇을 바꾸고 무엇을 똑같이 두었는지, 몇 번 반복했는지</div>
+          <textarea id="expMethod" style="min-height:70px" placeholder="어떻게 진행했는지"></textarea>
+        </div>
+      </div>
+
+      <!-- 제작활동 -->
+      <div class="type-extra" id="extra-제작활동">
+        <div class="form-group">
+          <label for="makeWhat">만든 것 / 사용한 도구</label>
+          <input type="text" id="makeWhat" placeholder="예: 급식 잔반 안내 웹페이지 / HTML, 챗GPT">
+        </div>
+      </div>
+
+      <!-- 기타 -->
+      <div class="type-extra" id="extra-기타">
+        <div class="form-group">
+          <label for="etcKind">어떤 활동인가요?</label>
+          <input type="text" id="etcKind" placeholder="예: 지역 도서관 봉사, 과학 경진대회 참가">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: 활동 내용 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num">STEP 3</span>
+        활동 내용
+      </div>
+
+      <div class="form-group">
+        <label for="title">활동 제목</label>
+        <div class="hint">한 줄로 요약해 주세요. 예) &lsquo;기후 위기 관련 도서를 읽고 우리 학교 분리배출 실태 조사&rsquo;</div>
+        <input type="text" id="title" placeholder="활동을 한 줄로 요약하면?">
+      </div>
+
+      <div class="form-group">
+        <label for="period">활동 기간 <span class="opt">(선택)</span></label>
+        <input type="text" id="period" placeholder="예: 7월 하순 ~ 8월 초, 약 3주">
+      </div>
+
+      <div class="form-group">
+        <label for="motive">① 시작하게 된 계기</label>
+        <div class="hint">수업에서 배운 내용, 뉴스, 평소 궁금했던 점 등 &mdash; 왜 하필 이 주제였는지</div>
+        <textarea id="motive" placeholder="이 활동을 왜 하게 되었나요?" oninput="countIt(this,'c-motive',100)"></textarea>
+        <div class="counter" id="c-motive">0자 (100자 이상 권장)</div>
+      </div>
+
+      <div class="form-group">
+        <label for="process">② 무엇을 어떻게 했는지</label>
+        <div class="hint">순서대로 구체적으로. 찾아본 자료, 만난 어려움, 해결한 방법까지 쓰면 좋습니다.</div>
+        <textarea id="process" style="min-height:150px" placeholder="활동 과정을 자세히 적어주세요" oninput="countIt(this,'c-process',300)"></textarea>
+        <div class="counter" id="c-process">0자 (300자 이상 권장)</div>
+      </div>
+
+      <div class="form-group">
+        <label for="learned">③ 알게 된 점 &middot; 느낀 점</label>
+        <div class="hint">&lsquo;재미있었다&rsquo; 대신, 활동 전과 후에 생각이 어떻게 달라졌는지 써주세요.</div>
+        <textarea id="learned" style="min-height:130px" placeholder="이 활동을 통해 무엇을 배웠나요?" oninput="countIt(this,'c-learned',200)"></textarea>
+        <div class="counter" id="c-learned">0자 (200자 이상 권장)</div>
+      </div>
+
+      <div class="form-group">
+        <label for="next">④ 이어서 더 해보고 싶은 것</label>
+        <div class="hint">남은 궁금증, 다음에 읽고 싶은 책, 진로와 연결되는 지점 등</div>
+        <textarea id="next" style="min-height:90px" placeholder="후속 탐구 계획이 있다면?" oninput="countIt(this,'c-next',80)"></textarea>
+        <div class="counter" id="c-next">0자 (80자 이상 권장)</div>
+      </div>
+
+      <div class="form-group">
+        <label for="link">관련 링크 <span class="opt">(선택)</span></label>
+        <div class="hint">보고서, 사진, 영상 등을 올려둔 곳이 있다면 주소를 붙여넣으세요.</div>
+        <input type="text" id="link" placeholder="https://">
+      </div>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+    <button class="btn btn-submit" id="btnSubmit" onclick="submitForm()">제출하기</button>
+    <button class="btn btn-reset" onclick="clearForm(true)">전체 지우기</button>
+
+  </div>
+
+  <!-- 결과 화면 -->
+  <div class="result" id="resultArea">
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg>
+    </div>
+    <h2>제출 완료!</h2>
+    <p>탐구활동 기록이 선생님께 전달되었습니다.</p>
+    <p style="font-size:.82rem; color:#888;">다른 활동도 했다면 아래 버튼을 눌러 계속 제출하세요.</p>
+    <div class="info-box" id="resultInfo"></div>
+    <br>
+    <button class="btn btn-reset" onclick="anotherActivity()">다른 활동 추가하기</button>
+  </div>
+
+</div>
+
+<script>
+/* ★★ 배포한 Apps Script 웹 앱 URL을 여기에 붙여넣으세요 ★★
+   apps-script.gs 파일의 안내를 따라 배포하면 URL이 나옵니다. */
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+const DRAFT_KEY = 'summer_activity_draft_v1';
+const FIELDS = ['classNum','number','sname','title','period','motive','process','learned','next','link',
+                'bookTitle','bookQuote','careerField','careerSource','dataQuestion','dataSource',
+                'expHypo','expMethod','makeWhat','etcKind'];
+
+/* 유형별 추가 항목: 저장할 때 라벨과 함께 묶어 보냄 */
+const EXTRA_FIELDS = {
+  '독서탐구':  [['bookTitle','읽은 책'], ['bookQuote','인상 깊은 구절']],
+  '진로탐구':  [['careerField','관심 분야'], ['careerSource','조사 방법']],
+  '데이터조사':[['dataQuestion','탐구 질문'], ['dataSource','자료 출처']],
+  '실험관찰':  [['expHypo','가설'], ['expMethod','실험 방법']],
+  '제작활동':  [['makeWhat','만든 것/도구']],
+  '기타':      [['etcKind','활동 종류']]
+};
+/* 유형마다 반드시 채워야 하는 항목 */
+const EXTRA_REQUIRED = {
+  '독서탐구': ['bookTitle'],
+  '진로탐구': ['careerField'],
+  '데이터조사': ['dataQuestion','dataSource'],
+  '실험관찰': ['expHypo','expMethod'],
+  '제작활동': ['makeWhat'],
+  '기타': ['etcKind']
+};
+
+let selectedType = '';
+
+/* ── 활동 유형 ── */
+function setType(el) {
+  selectedType = el.dataset.type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b === el));
+  document.querySelectorAll('.type-extra').forEach(x => x.classList.remove('show'));
+  const extra = document.getElementById('extra-' + selectedType);
+  if (extra) extra.classList.add('show');
+  saveDraft();
+}
+
+/* ── 글자수 ── */
+function countIt(el, counterId, min) {
+  const n = el.value.trim().length;
+  const c = document.getElementById(counterId);
+  c.textContent = n + '자 (' + min + '자 이상 권장)';
+  c.className = 'counter' + (n >= min ? ' ok' : n > 0 ? ' short' : '');
+  saveDraft();
+}
+
+function refreshCounters() {
+  countIt(document.getElementById('motive'),  'c-motive', 100);
+  countIt(document.getElementById('process'), 'c-process', 300);
+  countIt(document.getElementById('learned'), 'c-learned', 200);
+  countIt(document.getElementById('next'),    'c-next', 80);
+}
+
+/* ── 임시 저장 (이 기기에만) ── */
+let saveTimer = null;
+function saveDraft() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const d = { type: selectedType };
+    FIELDS.forEach(f => { const el = document.getElementById(f); if (el) d[f] = el.value; });
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch (e) { /* 저장 불가 시 무시 */ }
+  }, 400);
+}
+
+function loadDraft() {
+  let d;
+  try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return; }
+  if (!d) return;
+  FIELDS.forEach(f => { const el = document.getElementById(f); if (el && d[f] != null) el.value = d[f]; });
+  if (d.type) {
+    const btn = document.querySelector('.type-btn[data-type="' + d.type + '"]');
+    if (btn) setType(btn);
+  }
+  refreshCounters();
+  document.getElementById('draftBar').classList.remove('show');
+  showToast('이어서 작성합니다');
+}
+
+function hasDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+    if (!d) return false;
+    return ['title','motive','process','learned'].some(f => (d[f] || '').trim());
+  } catch (e) { return false; }
+}
+
+/* ── 제출 ── */
+async function submitForm() {
+  const get = id => (document.getElementById(id).value || '').trim();
+  const errEl = document.getElementById('errorMsg');
+
+  const missing = [];
+  if (!get('classNum')) missing.push('반');
+  if (!get('number'))   missing.push('번호');
+  if (!get('sname'))    missing.push('이름');
+  if (!selectedType)    missing.push('활동 유형');
+  if (!get('title'))    missing.push('활동 제목');
+  if (!get('motive'))   missing.push('① 계기');
+  if (!get('process'))  missing.push('② 활동 과정');
+  if (!get('learned'))  missing.push('③ 알게 된 점');
+  if (!get('next'))     missing.push('④ 이어서 하고 싶은 것');
+
+  if (selectedType) {
+    (EXTRA_REQUIRED[selectedType] || []).forEach(f => {
+      if (!get(f)) {
+        const label = (EXTRA_FIELDS[selectedType].find(p => p[0] === f) || [])[1] || f;
+        missing.push(label);
+      }
+    });
+  }
+
+  if (missing.length) {
+    errEl.textContent = '아직 안 채운 항목이 있어요: ' + missing.join(', ');
+    errEl.classList.add('show');
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    return;
+  }
+
+  if (get('process').length < 150) {
+    if (!confirm('활동 과정이 조금 짧습니다. 구체적으로 더 쓰면 생기부에 반영하기 좋아요.\n\n이대로 제출할까요?')) return;
+  }
+  errEl.classList.remove('show');
+
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    errEl.textContent = '아직 제출 주소가 설정되지 않았습니다. 선생님께 알려주세요.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  btn.textContent = '제출 중...';
+
+  /* 유형별 추가 항목은 "라벨: 내용" 형태로 한 칸에 묶어 정리 */
+  const extraText = (EXTRA_FIELDS[selectedType] || [])
+    .map(([id, label]) => { const v = get(id); return v ? label + ': ' + v : ''; })
+    .filter(Boolean).join('\n');
+
+  const data = {
+    timestamp: new Date().toLocaleString('ko-KR'),
+    classNum: get('classNum'),
+    number:   get('number'),
+    name:     get('sname'),
+    type:     selectedType,
+    title:    get('title'),
+    period:   get('period'),
+    extra:    extraText,
+    motive:   get('motive'),
+    process:  get('process'),
+    learned:  get('learned'),
+    next:     get('next'),
+    link:     get('link')
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(data)
+    });
+
+    document.getElementById('resultInfo').innerHTML =
+      `${data.classNum}반 ${data.number}번 ${data.name}<br>유형: ${data.type}<br>제목: ${data.title}`;
+    document.getElementById('formArea').style.display = 'none';
+    document.getElementById('resultArea').classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('제출 완료!');
+
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* 무시 */ }
+
+  } catch (err) {
+    errEl.textContent = '제출 중 오류가 났어요: ' + err.message + ' — 인터넷 연결을 확인하고 다시 눌러주세요.';
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = '제출하기';
+  }
+}
+
+/* ── 다른 활동 추가: 학생 정보는 남기고 활동 내용만 비움 ── */
+function anotherActivity() {
+  ['title','period','motive','process','learned','next','link',
+   'bookTitle','bookQuote','careerField','careerSource','dataQuestion','dataSource',
+   'expHypo','expMethod','makeWhat','etcKind'].forEach(f => {
+    const el = document.getElementById(f); if (el) el.value = '';
+  });
+  selectedType = '';
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.type-extra').forEach(x => x.classList.remove('show'));
+  refreshCounters();
+  document.getElementById('errorMsg').classList.remove('show');
+  document.getElementById('btnSubmit').disabled = false;
+  document.getElementById('btnSubmit').textContent = '제출하기';
+  document.getElementById('formArea').style.display = 'block';
+  document.getElementById('resultArea').classList.remove('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── 전체 지우기 ── */
+function clearForm(ask) {
+  if (ask && !confirm('작성한 내용을 모두 지울까요? 되돌릴 수 없습니다.')) return;
+  FIELDS.forEach(f => { const el = document.getElementById(f); if (el) el.value = ''; });
+  selectedType = '';
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.type-extra').forEach(x => x.classList.remove('show'));
+  refreshCounters();
+  document.getElementById('errorMsg').classList.remove('show');
+  try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* 무시 */ }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ── 초기화 ── */
+FIELDS.forEach(f => {
+  const el = document.getElementById(f);
+  if (el) el.addEventListener('input', saveDraft);
+});
+document.getElementById('classNum').addEventListener('change', saveDraft);
+if (hasDraft()) document.getElementById('draftBar').classList.add('show');
+refreshCounters();
+</script>
+</body>
+</html>

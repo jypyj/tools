@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수업 도구 모음 | 혜화여자고등학교</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Malgun Gothic','맑은 고딕', Apple SD Gothic Neo, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* ── 헤더 ── */
+.header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+  color: #fff;
+  padding: 52px 24px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -60%; left: -30%;
+  width: 160%; height: 200%;
+  background: radial-gradient(circle at 40% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
+}
+.header h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  position: relative;
+  margin-bottom: 8px;
+}
+.header p {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  position: relative;
+}
+
+/* ── 컨테이너 ── */
+.container {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 28px 16px 56px;
+}
+
+/* ── 섹션 ── */
+.section { margin-bottom: 30px; }
+.section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+/* ── 링크 카드 ── */
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 3px 12px rgba(0,0,0,0.04);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+  border: 1.5px solid transparent;
+}
+.link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border-color: #2563eb;
+}
+.link-card:active { transform: translateY(0); }
+
+.link-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.link-info { flex: 1; min-width: 0; }
+.link-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.badge-new {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background: #ef4444;
+  border-radius: 5px;
+  padding: 2px 5px;
+  line-height: 1;
+}
+.link-desc {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.link-arrow {
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.link-card:hover .link-arrow { color: #2563eb; }
+
+/* 색상 테마 */
+.icon-blue { background: #eff6ff; color: #2563eb; }
+.icon-green { background: #f0fdf4; color: #16a34a; }
+.icon-purple { background: #f5f3ff; color: #7c3aed; }
+.icon-orange { background: #fff7ed; color: #ea580c; }
+.icon-rose { background: #fff1f2; color: #e11d48; }
+.icon-teal { background: #f0fdfa; color: #0d9488; }
+.icon-amber { background: #fffbeb; color: #d97706; }
+.icon-indigo { background: #eef2ff; color: #4f46e5; }
+
+/* ── 푸터 ── */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.75rem;
+  color: #b0b8c4;
+}
+
+@media (max-width: 480px) {
+  .header { padding: 40px 20px 34px; }
+  .header h1 { font-size: 1.55rem; }
+  .link-card { padding: 16px; gap: 14px; }
+  .link-icon { width: 44px; height: 44px; font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>수업 도구 모음</h1>
+  <p>2026 혜화여자고등학교</p>
+</div>
+
+<div class="container">
+
+  <!-- 영어 수업 · 평가 -->
+  <div class="section">
+    <div class="section-title">영어 수업 · 평가</div>
+
+    <a href="https://jypyj.github.io/debate-guide/" target="_blank" class="link-card">
+      <div class="link-icon icon-blue">&#x1F4DD;</div>
+      <div class="link-info">
+        <div class="link-title">영어 토론 학습지</div>
+        <div class="link-desc">브레인스토밍, 스크립트 작성, 동료평가까지</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="https://jypyj.github.io/debate-guide/topic-select.html" target="_blank" class="link-card">
+      <div class="link-icon icon-purple">&#x1F4CB;</div>
+      <div class="link-info">
+        <div class="link-title">토론 주제 선택</div>
+        <div class="link-desc">주제 선택 + 찬성/반대 입장 제출 → 자동 조 편성</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="./question-maker/" target="_blank" class="link-card">
+      <div class="link-icon icon-indigo">&#x1F4DA;</div>
+      <div class="link-info">
+        <div class="link-title">영어 지문 문제 생성기 <span class="badge-new">NEW</span></div>
+        <div class="link-desc">지문 입력 → 유형별 영어 문제 자동 출제</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="./setuk/" target="_blank" class="link-card">
+      <div class="link-icon icon-teal">&#x1F393;</div>
+      <div class="link-info">
+        <div class="link-title">영어 토론 교과세특 생성기 <span class="badge-new">NEW</span></div>
+        <div class="link-desc">토론 활동 기록 → 영어 역량 중심 세특 문구 생성</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="./writing-chatbot/" target="_blank" class="link-card">
+      <div class="link-icon icon-rose">&#x270D;&#xFE0F;</div>
+      <div class="link-info">
+        <div class="link-title">영어 글쓰기 피드백 챗봇 <span class="badge-new">NEW</span></div>
+        <div class="link-desc">학생 영작문에 실시간 AI 피드백 제공</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="https://jypyj.github.io/revision/" target="_blank" class="link-card">
+      <div class="link-icon icon-blue">&#x1F504;</div>
+      <div class="link-info">
+        <div class="link-title">2026-3 Revision</div>
+        <div class="link-desc">3월 학습 내용 복습 자료</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+  </div>
+
+  <!-- 학급 운영 -->
+  <div class="section">
+    <div class="section-title">학급 운영</div>
+
+    <a href="./countdown/" target="_blank" class="link-card">
+      <div class="link-icon icon-orange">&#x23F1;&#xFE0F;</div>
+      <div class="link-info">
+        <div class="link-title">수업용 카운트다운 타이머 <span class="badge-new">NEW</span></div>
+        <div class="link-desc">활동 시간 관리를 위한 큰 화면 타이머</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="./album/" target="_blank" class="link-card">
+      <div class="link-icon icon-rose">&#x1F4F8;</div>
+      <div class="link-info">
+        <div class="link-title">우리 반 추억 앨범 <span class="badge-new">NEW</span></div>
+        <div class="link-desc">학급 사진을 함께 올리고 모아 보는 공유 앨범</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="https://jypyj.github.io/class/photobooth.html" target="_blank" class="link-card">
+      <div class="link-icon icon-purple">&#x1F4F7;</div>
+      <div class="link-info">
+        <div class="link-title">학급 포토부스</div>
+        <div class="link-desc">프레임을 씌워 즉석 사진 촬영</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="https://jypyj.github.io/ssam-planner/" target="_blank" class="link-card">
+      <div class="link-icon icon-green">&#x1F4D3;</div>
+      <div class="link-info">
+        <div class="link-title">키다리샘 학습 플래너</div>
+        <div class="link-desc">학습 계획 수립 및 자기 점검</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+
+    <a href="./vacation/" target="_blank" class="link-card">
+      <div class="link-icon icon-amber">&#x2600;&#xFE0F;</div>
+      <div class="link-info">
+        <div class="link-title">여름방학 탐구활동 제출 <span class="badge-new">NEW</span></div>
+        <div class="link-desc">방학 중 탐구활동 온라인 수합</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+  </div>
+
+  <!-- 교육공동체 -->
+  <div class="section">
+    <div class="section-title">교육공동체</div>
+
+    <a href="https://jypyj.github.io/hyehwa-community/pledge.html" target="_blank" class="link-card">
+      <div class="link-icon icon-green">&#x1F91D;</div>
+      <div class="link-info">
+        <div class="link-title">혜화공동체 약속 서약</div>
+        <div class="link-desc">학생 · 학부모 · 교직원 공동체 약속 실천 서약</div>
+      </div>
+      <div class="link-arrow">&#x203A;</div>
+    </a>
+  </div>
+
+</div>
+
+<div class="footer">
+  2026 혜화여자고등학교
+</div>
+
+</body>
+</html>

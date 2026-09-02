@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영어 토론 교과세특 생성기</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue: #2563eb;
+  --bluedark: #1d4ed8;
+  --bluelight: #eff6ff;
+  --green: #16a34a;
+  --red: #dc2626;
+  --amber: #d97706;
+  --gray50: #f8fafc;
+  --gray100: #f1f5f9;
+  --gray200: #e2e8f0;
+  --gray400: #94a3b8;
+  --gray600: #475569;
+  --gray800: #1e293b;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+}
+
+body {
+  font-family: 'Malgun Gothic','맑은 고딕',Apple SD Gothic Neo,sans-serif;
+  background: var(--gray100);
+  color: var(--gray800);
+  line-height: 1.65;
+  font-size: 15px;
+}
+
+.site-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #fff;
+  padding: 30px 24px 26px;
+  text-align: center;
+}
+.site-header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -.5px; }
+.site-header p { margin-top: 6px; opacity: .82; font-size: .86rem; }
+
+.container { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+
+.card {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 20px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--gray200);
+}
+.card-title .num {
+  background: var(--blue);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 99px;
+  letter-spacing: .3px;
+}
+.card-desc { font-size: .84rem; color: var(--gray600); margin-bottom: 14px; }
+
+.form-group { margin-bottom: 14px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-group label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--gray600);
+  margin-bottom: 6px;
+}
+.form-group label .opt { font-weight: 400; color: var(--gray400); font-size: .76rem; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+input[type=text], textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--gray200);
+  border-radius: 8px;
+  font: inherit;
+  font-size: .92rem;
+  background: var(--gray50);
+  color: var(--gray800);
+  transition: border-color .15s, box-shadow .15s;
+  resize: vertical;
+}
+textarea { min-height: 190px; line-height: 1.7; }
+input[type=text]:focus, textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  background: #fff;
+}
+
+/* 바이트 선택 */
+.byte-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.byte-btn {
+  border: 2px solid var(--gray200);
+  border-radius: 10px;
+  padding: 14px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .15s;
+  background: var(--gray50);
+  user-select: none;
+}
+.byte-btn:hover { border-color: var(--blue); transform: translateY(-1px); }
+.byte-btn.active { border-color: var(--blue); background: var(--bluelight); }
+.byte-btn .b-main { font-size: 1.15rem; font-weight: 800; color: #1e3a8a; }
+.byte-btn .b-sub { font-size: .72rem; color: var(--gray400); margin-top: 2px; }
+.byte-btn.active .b-sub { color: var(--blue); }
+
+/* 버튼 */
+.btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-submit {
+  background: linear-gradient(135deg, var(--blue), var(--bluedark));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37,99,235,.3);
+}
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,.4); }
+.btn-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.btn-ghost { background: var(--gray100); color: var(--gray600); }
+.btn-ghost:hover { background: var(--gray200); }
+
+/* 결과 */
+.result-card { display: none; }
+.result-card.show { display: block; animation: fadeIn .35s ease; }
+.byte-meter {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .82rem; font-weight: 700; margin-bottom: 10px;
+}
+.byte-meter .count { font-variant-numeric: tabular-nums; }
+.byte-meter .ok { color: var(--green); }
+.byte-meter .over { color: var(--red); }
+.bar { height: 7px; background: var(--gray200); border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
+.bar > span { display: block; height: 100%; background: var(--green); width: 0; transition: width .25s, background .25s; }
+.bar > span.over { background: var(--red); }
+#resultText { min-height: 220px; font-size: .95rem; line-height: 1.8; background:#fff; }
+
+.error-msg {
+  color: var(--red); font-size: .82rem; margin: 10px 0;
+  display: none; text-align: center; font-weight: 600;
+}
+.error-msg.show { display: block; }
+
+.loading { display: none; text-align: center; padding: 8px 0 2px; color: var(--blue); font-size: .85rem; font-weight: 700; }
+.loading.show { display: block; }
+.spinner {
+  display: inline-block; width: 15px; height: 15px; vertical-align: -2px; margin-right: 6px;
+  border: 2.5px solid var(--bluelight); border-top-color: var(--blue);
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+
+.toast {
+  position: fixed; top: 18px; left: 50%; transform: translateX(-50%) translateY(-8px);
+  background: var(--green); color: #fff; padding: 10px 22px; border-radius: 99px;
+  font-size: .82rem; font-weight: 700; opacity: 0;
+  transition: opacity .25s, transform .25s; z-index: 500; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.note { font-size: .78rem; color: var(--gray400); margin-top: 10px; line-height: 1.6; }
+
+@media (max-width: 560px) {
+  .row2 { grid-template-columns: 1fr; }
+  .byte-grid { grid-template-columns: 1fr 1fr; }
+  .site-header h1 { font-size: 1.25rem; }
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 모드 탭 */
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.mode-tab {
+  padding: 13px 10px; border: 1.5px solid var(--gray200); background: #fff;
+  border-radius: 10px; font: inherit; font-weight: 700; font-size: .9rem;
+  color: var(--gray600); cursor: pointer; transition: all .15s;
+}
+.mode-tab:hover { border-color: var(--blue); }
+.mode-tab.active { background: var(--bluelight); border-color: var(--blue); color: var(--bluedark); }
+.mode-tab .t-sub { display: block; font-size: .72rem; font-weight: 400; color: var(--gray400); margin-top: 2px; }
+.mode-tab.active .t-sub { color: var(--blue); }
+
+/* 발화자 카드 */
+#batchResults { display: none; }
+#batchResults.show { display: block; }
+.pcard { border: 1.5px solid var(--gray200); border-radius: 10px; padding: 14px 14px 12px; margin-bottom: 12px; animation: fadeIn .3s ease; }
+.pcard-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.pcard-name { font-weight: 800; color: #1e3a8a; font-size: .95rem; display: flex; align-items: center; gap: 8px; }
+.pcard-name .badge { background: var(--blue); color: #fff; font-size: .7rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; }
+.pcard-byte { font-size: .78rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pcard textarea { min-height: 120px; font-size: .92rem; line-height: 1.75; background: #fff; }
+.pcard .copy-one { margin-top: 8px; padding: 9px; font-size: .85rem; }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">복사했습니다</div>
+
+<header class="site-header">
+  <h1>영어 토론 교과세특 생성기</h1>
+  <p>토론 내용 입력 → 바이트 선택 → 생기부 세특 자동 생성</p>
+</header>
+
+<div class="container">
+
+  <!-- 모드 선택 -->
+  <div class="mode-tabs" id="modeTabs">
+    <button class="mode-tab active" data-mode="single">개인 입력<span class="t-sub">한 학생 내용 → 세특 1개</span></button>
+    <button class="mode-tab" data-mode="script">토론 대본 (여러 명)<span class="t-sub">전체 대본 → 발화자별 세특</span></button>
+  </div>
+
+  <!-- 입력 -->
+  <div class="card">
+    <div class="card-title"><span class="num">STEP 1</span><span id="step1Title">토론 활동 내용 입력</span></div>
+
+    <div class="row2">
+      <div class="form-group">
+        <label for="subject">교과명</label>
+        <input type="text" id="subject" placeholder="예: 공통영어1" value="공통영어1">
+      </div>
+      <div class="form-group">
+        <label for="topic">토론 주제 <span class="opt">(선택)</span></label>
+        <input type="text" id="topic" placeholder="예: Should AI be allowed in exams?">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="content"><span id="contentLabel">학생의 토론 활동 내용</span> <span class="opt" id="contentHint">— 발언·주장·근거·반박·태도·협업·영어 표현 등</span></label>
+      <textarea id="content" placeholder="이 학생이 토론에서 보인 모습을 자유롭게 적어주세요. 영상을 보고 정리한 메모, 발언 전사 내용을 그대로 붙여넣어도 됩니다.&#10;&#10;예) AI 시험 사용 반대 입장. '시험은 학생의 실제 능력을 측정해야 한다'를 핵심 근거로 제시. 상대가 'AI는 도구일 뿐'이라고 하자 계산기와 생성형 AI의 차이를 들어 반박. 'It is not a tool but a replacement of thinking'이라는 영어 표현 사용. 팀원이 막히자 핵심 단어를 영어로 짚어줌."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="emphasis"><span id="emphasisLabel">특별히 강조할 점</span> <span class="opt">(선택)</span></label>
+      <input type="text" id="emphasis" placeholder="예: 반박 능력, 리더십, 영어 유창성 등">
+    </div>
+
+    <p class="note" id="step1Note">※ 학생 이름은 입력하지 마세요. 생기부 세특에는 이름이 들어가지 않습니다. · 한 번에 한 학생씩 생성합니다.</p>
+  </div>
+
+  <!-- 바이트 -->
+  <div class="card">
+    <div class="card-title"><span class="num">STEP 2</span>바이트 한도 선택</div>
+    <div class="byte-grid" id="byteGrid">
+      <div class="byte-btn" data-byte="500"><div class="b-main">500</div><div class="b-sub">약 165자</div></div>
+      <div class="byte-btn" data-byte="750"><div class="b-main">750</div><div class="b-sub">약 250자</div></div>
+      <div class="byte-btn" data-byte="1000"><div class="b-main">1000</div><div class="b-sub">약 330자</div></div>
+      <div class="byte-btn active" data-byte="1500"><div class="b-main">1500</div><div class="b-sub">약 500자</div></div>
+    </div>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+  <div class="loading" id="loading"><span class="spinner"></span>세특 생성 중… (5~15초)</div>
+  <button class="btn btn-submit" id="btnGen" onclick="generate()">세특 생성하기</button>
+
+  <!-- 결과 -->
+  <div class="card result-card" id="resultCard" style="margin-top:16px;">
+    <div class="card-title"><span class="num">결과</span>생성된 세특 <span class="opt" style="font-weight:400;font-size:.78rem;color:var(--gray400)">— 직접 수정 가능</span></div>
+
+    <div class="byte-meter">
+      <span class="count" id="byteCount">0 byte</span>
+      <span id="byteLimitLabel">/ 1500 byte 한도</span>
+    </div>
+    <div class="bar"><span id="byteBar"></span></div>
+
+    <textarea id="resultText" oninput="updateByteMeter()"></textarea>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="copyResult()">📋 복사</button>
+      <button class="btn btn-ghost" onclick="generate()">↻ 다시 생성</button>
+    </div>
+  </div>
+
+  <!-- 결과: 대본 모드 (발화자별) -->
+  <div class="card" id="batchResults" style="margin-top:16px;">
+    <div class="card-title">
+      <span class="num">결과</span>발화자별 세특
+      <span class="opt" style="font-weight:400;font-size:.78rem;color:var(--gray400)">— 각자 수정 가능</span>
+    </div>
+    <div id="batchList"></div>
+    <button class="btn btn-ghost" style="margin-top:6px;" onclick="copyAll()">📋 전체 복사</button>
+  </div>
+
+</div>
+
+<script>
+/* ★★ Apps Script 배포 URL을 여기에 붙여넣으세요 ★★ */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_CI_ALArBUXTWPolgD23ykXPB4VARGUXkn1bhAfqaDeoLDmLECgaAIiCsjtJRu8e6/exec';
+
+let selectedByte = 1500;
+let currentMode = 'single';   // 'single' | 'script'
+
+/* 모드 탭 */
+document.getElementById('modeTabs').addEventListener('click', function (e) {
+  const tab = e.target.closest('.mode-tab');
+  if (!tab) return;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  applyMode(tab.dataset.mode);
+});
+
+function applyMode(mode) {
+  currentMode = mode;
+  const isScript = mode === 'script';
+
+  document.getElementById('step1Title').textContent = isScript ? '토론 대본 붙여넣기' : '토론 활동 내용 입력';
+  document.getElementById('contentLabel').textContent = isScript ? '토론 대본 (전체 녹음 전사본)' : '학생의 토론 활동 내용';
+  document.getElementById('contentHint').textContent = isScript
+    ? '— 발화자가 "참가자 1:", "A:", 이름 등으로 구분된 대본'
+    : '— 발언·주장·근거·반박·태도·협업·영어 표현 등';
+  document.getElementById('emphasisLabel').textContent = isScript ? '모든 학생에게 공통으로 강조할 점' : '특별히 강조할 점';
+  document.getElementById('step1Note').textContent = isScript
+    ? '※ 발화자 표시(참가자 1, 이름 등)가 있는 대본을 그대로 붙여넣으세요. 발화자별로 세특이 각각 생성됩니다. (조원 3~7명)'
+    : '※ 학생 이름은 입력하지 마세요. 생기부 세특에는 이름이 들어가지 않습니다. · 한 번에 한 학생씩 생성합니다.';
+  document.getElementById('content').placeholder = isScript
+    ? '토론 전체 대본을 붙여넣으세요.\n\n예)\n참가자 1: I think AI should be allowed because...\n참가자 2: But exams measure your own ability...\n참가자 3: I agree with the second point, and...'
+    : "이 학생이 토론에서 보인 모습을 자유롭게 적어주세요. 영상을 보고 정리한 메모, 발언 전사 내용을 그대로 붙여넣어도 됩니다.";
+  document.getElementById('btnGen').textContent = isScript ? '발화자별 세특 생성하기' : '세특 생성하기';
+
+  // 결과 영역 초기화
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('batchResults').classList.remove('show');
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+/* 바이트 버튼 */
+document.getElementById('byteGrid').addEventListener('click', function (e) {
+  const btn = e.target.closest('.byte-btn');
+  if (!btn) return;
+  document.querySelectorAll('.byte-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedByte = Number(btn.dataset.byte);
+  document.getElementById('byteLimitLabel').textContent = '/ ' + selectedByte + ' byte 한도';
+  updateByteMeter();
+  refreshBatchMeters();
+});
+
+/* NEIS 바이트 계산: 한글 등 3, 줄바꿈 2, 그 외 1 */
+function getByte(str) {
+  let b = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    if (c === 10 || c === 13) b += 2;
+    else if (c > 127) b += 3;
+    else b += 1;
+  }
+  return b;
+}
+
+function updateByteMeter() {
+  const txt = document.getElementById('resultText').value;
+  const b = getByte(txt);
+  const limit = selectedByte;
+  const countEl = document.getElementById('byteCount');
+  const barEl = document.getElementById('byteBar');
+  const over = b > limit;
+
+  countEl.textContent = b.toLocaleString() + ' byte';
+  countEl.className = 'count ' + (over ? 'over' : 'ok');
+  const pct = Math.min(100, Math.round(b / limit * 100));
+  barEl.style.width = pct + '%';
+  barEl.classList.toggle('over', over);
+}
+
+async function generate() {
+  const content = document.getElementById('content').value.trim();
+  const errEl = document.getElementById('errorMsg');
+  errEl.classList.remove('show');
+
+  if (!content) {
+    errEl.textContent = currentMode === 'script' ? '토론 대본을 붙여넣어 주세요.' : '토론 활동 내용을 입력해주세요.';
+    errEl.classList.add('show');
+    return;
+  }
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    errEl.textContent = 'SCRIPT_URL이 설정되지 않았습니다. index.html 안에 Apps Script 배포 URL을 넣어주세요.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('btnGen');
+  const loading = document.getElementById('loading');
+  btn.disabled = true;
+  loading.innerHTML = '<span class="spinner"></span>' +
+    (currentMode === 'script' ? '발화자별 세특 생성 중… (10~30초)' : '세특 생성 중… (5~15초)');
+  loading.classList.add('show');
+
+  const payload = {
+    mode: currentMode,
+    content: content,
+    subject: document.getElementById('subject').value.trim() || '공통영어',
+    topic: document.getElementById('topic').value.trim(),
+    emphasis: document.getElementById('emphasis').value.trim(),
+    byteLimit: selectedByte
+  };
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+
+    if (!json.success) throw new Error(json.message || '생성 실패');
+
+    if (currentMode === 'script') {
+      document.getElementById('resultCard').classList.remove('show');
+      renderBatch(json.items || []);
+      document.getElementById('batchResults').classList.add('show');
+      document.getElementById('batchResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      document.getElementById('batchResults').classList.remove('show');
+      document.getElementById('byteLimitLabel').textContent = '/ ' + selectedByte + ' byte 한도';
+      document.getElementById('resultText').value = json.text;
+      document.getElementById('resultCard').classList.add('show');
+      updateByteMeter();
+      document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+  } catch (err) {
+    errEl.textContent = '오류: ' + err.message;
+    errEl.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove('show');
+  }
+}
+
+/* ── 대본 모드: 발화자별 카드 렌더링 ── */
+function renderBatch(items) {
+  const list = document.getElementById('batchList');
+  list.innerHTML = '';
+  if (!items.length) {
+    list.innerHTML = '<p class="note">발화자를 찾지 못했습니다. 대본에 "참가자 1:" 처럼 발화자 표시가 있는지 확인하세요.</p>';
+    return;
+  }
+  items.forEach(function (it, i) {
+    const card = document.createElement('div');
+    card.className = 'pcard';
+
+    const head = document.createElement('div');
+    head.className = 'pcard-head';
+    const name = document.createElement('div');
+    name.className = 'pcard-name';
+    name.innerHTML = '<span class="badge">' + (i + 1) + '</span>' + escapeHtml(it.participant || ('참가자 ' + (i + 1)));
+    const byteEl = document.createElement('div');
+    byteEl.className = 'pcard-byte';
+    head.appendChild(name);
+    head.appendChild(byteEl);
+
+    const ta = document.createElement('textarea');
+    ta.value = it.setuk || '';
+    ta.addEventListener('input', function () { meterFor(ta, byteEl); });
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn btn-ghost copy-one';
+    copyBtn.style.width = '100%';
+    copyBtn.textContent = '📋 이 학생 복사';
+    copyBtn.onclick = function () { navigator.clipboard.writeText(ta.value).then(showToast); };
+
+    card.appendChild(head);
+    card.appendChild(ta);
+    card.appendChild(copyBtn);
+    list.appendChild(card);
+
+    meterFor(ta, byteEl);
+  });
+}
+
+function meterFor(ta, byteEl) {
+  const b = getByte(ta.value);
+  const over = b > selectedByte;
+  byteEl.textContent = b.toLocaleString() + ' / ' + selectedByte + ' byte';
+  byteEl.style.color = over ? 'var(--red)' : 'var(--green)';
+}
+
+function refreshBatchMeters() {
+  document.querySelectorAll('#batchList .pcard').forEach(function (card) {
+    const ta = card.querySelector('textarea');
+    const byteEl = card.querySelector('.pcard-byte');
+    if (ta && byteEl) meterFor(ta, byteEl);
+  });
+}
+
+function copyAll() {
+  const cards = document.querySelectorAll('#batchList .pcard');
+  let out = '';
+  cards.forEach(function (card) {
+    const nameEl = card.querySelector('.pcard-name');
+    const ta = card.querySelector('textarea');
+    const name = nameEl ? nameEl.textContent.replace(/^\d+/, '').trim() : '';
+    out += '[' + name + ']\n' + ta.value + '\n\n';
+  });
+  navigator.clipboard.writeText(out.trim()).then(showToast);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+
+function copyResult() {
+  const txt = document.getElementById('resultText').value;
+  navigator.clipboard.writeText(txt).then(showToast);
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+</script>
+</body>
+</html>

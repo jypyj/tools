@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리 반 추억 앨범</title>
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5A52D5;
+            --primary-light: #E8E6FF;
+            --accent: #FF6584;
+            --bg: #F5F6FA;
+            --card: #FFFFFF;
+            --text: #2D3436;
+            --text-light: #888;
+            --border: #E8E8E8;
+            --shadow: 0 2px 16px rgba(0,0,0,0.08);
+            --radius: 14px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ========== LOCK SCREEN ========== */
+        .lock-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .lock-card {
+            background: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .lock-card .lock-icon { font-size: 3.5em; margin-bottom: 16px; }
+        .lock-card h1 { font-size: 1.6em; margin-bottom: 6px; }
+        .lock-card .sub { color: var(--text-light); margin-bottom: 30px; font-size: 0.95em; }
+
+        .lock-card input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1.05em;
+            text-align: center;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .lock-card input:focus { outline: none; border-color: var(--primary); }
+
+        .lock-card .nickname-input {
+            letter-spacing: normal;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .lock-card .nickname-input::placeholder { letter-spacing: normal; }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6C63FF, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,99,255,0.4); }
+
+        .lock-card .error-msg {
+            color: var(--accent);
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .lock-card .privacy-note {
+            margin-top: 24px;
+            padding: 14px;
+            background: #FFF8E1;
+            border-radius: 10px;
+            font-size: 0.82em;
+            color: #666;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 20px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 { font-size: 1.5em; }
+        .header .user-info { display: flex; align-items: center; gap: 12px; font-size: 0.9em; }
+
+        .header .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .header .logout-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .header .logout-btn:hover { background: rgba(255,255,255,0.3); }
+
+        /* ========== MONTH NAV ========== */
+        .month-nav {
+            display: flex;
+            gap: 6px;
+            padding: 16px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .month-btn {
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            background: var(--card);
+            color: var(--text-light);
+            border-radius: 22px;
+            cursor: pointer;
+            font-size: 0.88em;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+
+        .month-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .month-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(108,99,255,0.35);
+        }
+
+        .month-btn .cnt {
+            display: inline-block;
+            background: rgba(108,99,255,0.15);
+            padding: 1px 7px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-left: 3px;
+        }
+
+        .month-btn.active .cnt { background: rgba(255,255,255,0.3); }
+
+        /* ========== UPLOAD ========== */
+        .upload-section {
+            max-width: 1100px;
+            margin: 0 auto 16px;
+            padding: 0 20px;
+        }
+
+        .upload-box {
+            background: var(--card);
+            border: 3px dashed #D0CCF7;
+            border-radius: var(--radius);
+            padding: 36px 20px 28px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-box:hover, .upload-box.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .upload-box .icon { font-size: 2.8em; margin-bottom: 8px; }
+        .upload-box p { color: var(--text-light); }
+        .upload-box .sub { font-size: 0.82em; color: #bbb; margin-top: 4px; }
+        .upload-box input[type="file"] { display: none; }
+
+        .upload-meta {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .upload-meta input {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9em;
+            width: 220px;
+        }
+
+        .upload-meta input:focus { outline: none; border-color: var(--primary); }
+
+        .upload-preview {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 14px;
+        }
+
+        .upload-preview .thumb-wrap {
+            position: relative;
+        }
+
+        .upload-preview .thumb {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+        }
+
+        .upload-preview .thumb-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.7em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-btn {
+            padding: 11px 36px;
+            background: linear-gradient(135deg, #6C63FF, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 22px;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+            transition: all 0.2s;
+        }
+
+        .upload-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,99,255,0.4); }
+        .upload-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .progress-wrap {
+            width: 100%;
+            max-width: 400px;
+            margin: 12px auto 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6C63FF, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.82em;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* ========== PHOTO GRID ========== */
+        .album-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        .album-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .album-header h2 { font-size: 1.3em; color: #444; }
+        .album-header .cnt { color: var(--text-light); font-size: 0.9em; }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        /* ========== PHOTO CARD ========== */
+        .photo-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+        }
+
+        .photo-card .img-wrap {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .photo-card .img-wrap img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .photo-card:hover .img-wrap img { transform: scale(1.03); }
+
+        .photo-card .img-wrap .date-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.55);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.78em;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        .photo-card .card-body { padding: 14px 16px; }
+
+        .photo-card .caption {
+            font-weight: 700;
+            font-size: 1em;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+
+        .photo-card .uploader-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .photo-card .uploader {
+            font-size: 0.82em;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .photo-card .delete-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 0.82em;
+            padding: 2px 6px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .photo-card .delete-btn:hover { color: var(--accent); background: #FFF0F0; }
+
+        .admin-mode .photo-card .delete-btn { display: inline-block; }
+
+        /* ========== COMMENTS ========== */
+        .comments-section {
+            border-top: 1px solid var(--border);
+            padding: 10px 16px 14px;
+        }
+
+        .comments-toggle {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.85em;
+            cursor: pointer;
+            padding: 4px 0;
+            font-weight: 600;
+        }
+
+        .comments-toggle:hover { color: var(--primary); }
+
+        .comments-list {
+            display: none;
+            margin-top: 8px;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .comments-list.open { display: block; }
+
+        .comment-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: flex-start;
+        }
+
+        .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .comment-body {
+            background: #F4F4F8;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.88em;
+            flex: 1;
+            position: relative;
+        }
+
+        .comment-body .cname { font-weight: 700; font-size: 0.82em; color: var(--primary); }
+        .comment-body .ctext { margin-top: 2px; word-break: break-word; }
+        .comment-body .ctime { font-size: 0.72em; color: #bbb; margin-top: 3px; }
+
+        .comment-body .cdel {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 0.8em;
+            display: none;
+        }
+
+        .comment-body .cdel:hover { color: var(--accent); }
+        .admin-mode .comment-body .cdel { display: inline; }
+
+        .comment-form {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .comment-form input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.88em;
+        }
+
+        .comment-form input:focus { outline: none; border-color: var(--primary); }
+
+        .comment-form button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .comment-form button:hover { background: var(--primary-dark); }
+
+        /* ========== LIGHTBOX ========== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .lightbox.active { display: flex; }
+
+        .lightbox img {
+            max-width: 92vw;
+            max-height: 82vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .lightbox .lb-caption {
+            color: white;
+            margin-top: 14px;
+            font-size: 1em;
+            text-align: center;
+            padding: 0 20px;
+            opacity: 0.85;
+        }
+
+        .lightbox .lb-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            color: white;
+            font-size: 2.2em;
+            cursor: pointer;
+            background: none;
+            border: none;
+            opacity: 0.7;
+        }
+
+        .lightbox .lb-close:hover { opacity: 1; }
+
+        .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 2.2em;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            opacity: 0.7;
+        }
+
+        .lb-nav:hover { background: rgba(255,255,255,0.25); opacity: 1; }
+        .lb-prev { left: 14px; }
+        .lb-next { right: 14px; }
+
+        /* ========== EMPTY / LOADING ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #bbb;
+        }
+
+        .empty-state .icon { font-size: 3.5em; margin-bottom: 12px; }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #eee;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ========== SETUP SCREEN ========== */
+        .setup-overlay {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            padding: 20px;
+        }
+
+        .setup-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: var(--shadow);
+        }
+
+        .setup-card h2 { text-align: center; margin-bottom: 6px; }
+        .setup-card .sub { text-align: center; color: var(--text-light); margin-bottom: 28px; font-size: 0.92em; }
+
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9em; color: #555; }
+
+        .field input, .field textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.92em;
+        }
+
+        .field textarea { height: 140px; font-family: monospace; font-size: 0.82em; }
+
+        .setup-note {
+            margin-top: 20px;
+            padding: 16px;
+            background: #F0F0FF;
+            border-radius: 10px;
+            font-size: 0.82em;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .setup-note a { color: var(--primary); }
+        .setup-note code { background: #E8E6FF; padding: 2px 5px; border-radius: 4px; font-size: 0.9em; }
+
+        /* ========== ADMIN FLOAT ========== */
+        .admin-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 200;
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-float button {
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8em;
+            backdrop-filter: blur(4px);
+        }
+
+        .admin-float button:hover { background: rgba(0,0,0,0.8); }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.92em;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            color: white;
+            font-weight: 600;
+            max-width: 360px;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: #43a047; }
+        .toast.error { background: #e53935; }
+        .toast.info { background: #333; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.2em; }
+            .photo-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .photo-card .img-wrap img { height: 160px; }
+            .photo-card .card-body { padding: 10px 12px; }
+            .photo-card .caption { font-size: 0.88em; }
+            .month-btn { padding: 6px 12px; font-size: 0.8em; }
+            .upload-box { padding: 24px 14px 20px; }
+            .lb-nav { width: 44px; height: 44px; font-size: 1.6em; }
+            .lock-card { padding: 36px 24px; }
+            .comments-section { padding: 8px 12px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== LOCK SCREEN ==================== -->
+<div id="lockScreen" class="lock-screen">
+    <div class="lock-card">
+        <div class="lock-icon">🔒</div>
+        <h1 id="lockTitle">우리 반 추억 앨범</h1>
+        <p class="sub">반 친구들만 볼 수 있는 비공개 앨범입니다</p>
+        <input type="password" id="accessCode" placeholder="입장 코드" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="text" id="nickname" class="nickname-input" placeholder="닉네임 (예: 김민수)" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="btn-primary" onclick="doLogin()">입장하기</button>
+        <p class="error-msg" id="lockError">입장 코드가 올바르지 않습니다.</p>
+        <div class="privacy-note">
+            🛡️ <strong>개인정보 & 초상권 보호 안내</strong><br>
+            - 이 앨범은 우리 반 학생만 접근할 수 있습니다.<br>
+            - 올린 사진을 외부에 공유하지 마세요.<br>
+            - 친구가 원하지 않는 사진은 올리지 마세요.<br>
+            - 관리자가 부적절한 사진을 삭제할 수 있습니다.
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SETUP SCREEN ==================== -->
+<div id="setupScreen" class="setup-overlay" style="display:none;">
+    <div class="setup-card">
+        <h2>초기 설정</h2>
+        <p class="sub">Firebase 프로젝트를 연결하고 앨범을 설정하세요.</p>
+        <div class="field">
+            <label>앨범 제목</label>
+            <input type="text" id="cfgTitle" placeholder="예: 1학년 3반 추억 앨범">
+        </div>
+        <div class="field">
+            <label>입장 코드 (학생들에게 알려줄 비밀번호)</label>
+            <input type="text" id="cfgAccessCode" placeholder="예: class2026">
+        </div>
+        <div class="field">
+            <label>관리자 비밀번호 (사진/댓글 삭제용)</label>
+            <input type="text" id="cfgAdminPw" placeholder="예: teacher1234">
+        </div>
+        <div class="field">
+            <label>Firebase Config (JSON)</label>
+            <textarea id="cfgFirebase" placeholder='{
+  "apiKey": "...",
+  "authDomain": "...",
+  "projectId": "...",
+  "storageBucket": "...",
+  "messagingSenderId": "...",
+  "appId": "..."
+}'></textarea>
+        </div>
+        <button class="btn-primary" onclick="saveSetup()">설정 완료</button>
+        <div class="setup-note">
+            <strong>Firebase 프로젝트 만드는 법:</strong><br>
+            1. <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a> 접속 후 프로젝트 추가<br>
+            2. 프로젝트 설정 > 웹 앱 추가 > <code>firebaseConfig</code> 복사<br>
+            3. 좌측 메뉴 > <strong>Storage</strong> 활성화 > 규칙을 <code>allow read, write: if true;</code>로 변경<br>
+            4. 좌측 메뉴 > <strong>Firestore Database</strong> 활성화 > 규칙을 <code>allow read, write: if true;</code>로 변경
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div id="mainApp" style="display:none;">
+    <div class="header">
+        <div class="header-inner">
+            <h1 id="appTitle">우리 반 추억 앨범</h1>
+            <div class="user-info">
+                <span class="user-badge" id="userBadge"></span>
+                <button class="logout-btn" onclick="doLogout()">나가기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Month nav -->
+    <div class="month-nav" id="monthNav"></div>
+
+    <!-- Upload -->
+    <div class="upload-section">
+        <div class="upload-box" id="uploadBox">
+            <div class="icon">📸</div>
+            <p>사진을 드래그하거나 클릭해서 업로드</p>
+            <p class="sub">JPG, PNG, GIF, WEBP / 최대 10MB / 여러 장 가능</p>
+            <input type="file" id="fileInput" multiple accept="image/*">
+            <div class="upload-meta">
+                <input type="text" id="photoCaption" placeholder="사진 설명 (선택)">
+            </div>
+            <div class="upload-preview" id="uploadPreview"></div>
+            <div class="upload-actions">
+                <button class="upload-btn" id="uploadBtn" onclick="uploadPhotos()">업로드</button>
+            </div>
+            <div class="progress-wrap" id="progressWrap">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-text" id="progressText"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Album -->
+    <div class="album-container">
+        <div class="album-header">
+            <h2 id="monthTitle">전체 사진</h2>
+            <span class="cnt" id="photoCnt"></span>
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none;">
+            <div class="icon">📷</div>
+            <p>아직 사진이 없어요.<br>첫 번째 사진을 올려보세요!</p>
+        </div>
+        <div class="loading-spinner" id="loadingSpinner" style="display:none;">
+            <div class="spinner"></div>
+            <p style="color:#999; font-size:0.9em;">불러오는 중...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <button class="lb-close" onclick="closeLB()">&times;</button>
+    <button class="lb-nav lb-prev" onclick="navLB(-1)">&#8249;</button>
+    <img id="lbImg" src="">
+    <div class="lb-caption" id="lbCaption"></div>
+    <button class="lb-nav lb-next" onclick="navLB(1)">&#8250;</button>
+</div>
+
+<!-- Admin float -->
+<div class="admin-float" id="adminFloat">
+    <button onclick="toggleAdmin()" id="adminBtn">관리자 모드</button>
+    <button onclick="openSettings()" id="settingsBtn" style="display:none;">설정 변경</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+
+<script>
+// ======================== STATE ========================
+let db, storage;
+let allPhotos = [];
+let filtered = [];
+let curMonth = 'all';
+let lbIndex = 0;
+let isAdmin = false;
+let currentUser = '';
+let selectedFiles = [];
+
+const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const AVATAR_COLORS = ['#6C63FF','#FF6584','#43a047','#FF9800','#00BCD4','#E91E63','#9C27B0','#3F51B5','#009688','#F44336'];
+
+function getColor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+// ======================== INIT ========================
+window.addEventListener('DOMContentLoaded', () => {
+    const cfg = getConfig();
+    if (!cfg) {
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('setupScreen').style.display = 'flex';
+        return;
+    }
+
+    // Check if already logged in
+    const session = sessionStorage.getItem('album_user');
+    if (session) {
+        currentUser = session;
+        initApp(cfg);
+    }
+    // else show lock screen (default visible)
+
+    if (cfg.title) {
+        document.getElementById('lockTitle').textContent = cfg.title;
+    }
+});
+
+function getConfig() {
+    const raw = localStorage.getItem('album_config');
+    return raw ? JSON.parse(raw) : null;
+}
+
+// ======================== SETUP ========================
+function saveSetup() {
+    const title = document.getElementById('cfgTitle').value.trim() || '우리 반 추억 앨범';
+    const accessCode = document.getElementById('cfgAccessCode').value.trim();
+    const adminPw = document.getElementById('cfgAdminPw').value.trim();
+    const fbRaw = document.getElementById('cfgFirebase').value.trim();
+
+    if (!accessCode) return toast('입장 코드를 설정해주세요.', 'error');
+    if (!adminPw) return toast('관리자 비밀번호를 설정해주세요.', 'error');
+
+    let fbConfig;
+    try {
+        fbConfig = JSON.parse(fbRaw);
+        if (!fbConfig.apiKey || !fbConfig.projectId) throw 0;
+    } catch {
+        return toast('Firebase 설정 JSON을 확인해주세요.', 'error');
+    }
+
+    const config = { title, accessCode, adminPw, firebase: fbConfig };
+    localStorage.setItem('album_config', JSON.stringify(config));
+
+    document.getElementById('setupScreen').style.display = 'none';
+    document.getElementById('lockScreen').style.display = 'flex';
+    document.getElementById('lockTitle').textContent = title;
+}
+
+// ======================== LOGIN / LOGOUT ========================
+function doLogin() {
+    const cfg = getConfig();
+    if (!cfg) return;
+
+    const code = document.getElementById('accessCode').value.trim();
+    const nick = document.getElementById('nickname').value.trim();
+
+    if (code !== cfg.accessCode) {
+        document.getElementById('lockError').style.display = 'block';
+        return;
+    }
+    if (!nick) {
+        toast('닉네임을 입력해주세요.', 'error');
+        return;
+    }
+
+    document.getElementById('lockError').style.display = 'none';
+    currentUser = nick;
+    sessionStorage.setItem('album_user', nick);
+    initApp(cfg);
+}
+
+function doLogout() {
+    sessionStorage.removeItem('album_user');
+    currentUser = '';
+    isAdmin = false;
+    document.body.classList.remove('admin-mode');
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('lockScreen').style.display = 'flex';
+    document.getElementById('accessCode').value = '';
+    document.getElementById('nickname').value = '';
+}
+
+// ======================== INIT APP ========================
+function initApp(cfg) {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+
+    const title = cfg.title || '우리 반 추억 앨범';
+    document.getElementById('appTitle').textContent = title;
+    document.title = title;
+    document.getElementById('userBadge').textContent = currentUser;
+
+    if (!db) {
+        firebase.initializeApp(cfg.firebase);
+        db = firebase.firestore();
+        storage = firebase.storage();
+    }
+
+    buildMonthNav();
+    setupUpload();
+    loadPhotos();
+}
+
+// ======================== MONTH NAV ========================
+function buildMonthNav() {
+    const nav = document.getElementById('monthNav');
+    let h = `<button class="month-btn active" onclick="pickMonth('all')">전체</button>`;
+    MONTHS.forEach((m, i) => {
+        h += `<button class="month-btn" data-m="${i+1}" onclick="pickMonth(${i+1})">${m}</button>`;
+    });
+    nav.innerHTML = h;
+}
+
+function pickMonth(m) {
+    curMonth = m;
+    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    if (m === 'all') {
+        document.querySelector('.month-btn').classList.add('active');
+        document.getElementById('monthTitle').textContent = '전체 사진';
+    } else {
+        document.querySelector(`.month-btn[data-m="${m}"]`).classList.add('active');
+        document.getElementById('monthTitle').textContent = `${m}월 사진`;
+    }
+    renderPhotos();
+}
+
+function updateCounts() {
+    const c = {};
+    allPhotos.forEach(p => {
+        const m = new Date(p.timestamp).getMonth() + 1;
+        c[m] = (c[m] || 0) + 1;
+    });
+    document.querySelectorAll('.month-btn[data-m]').forEach(btn => {
+        const m = +btn.dataset.m;
+        const cnt = btn.querySelector('.cnt');
+        if (cnt) cnt.remove();
+        if (c[m]) btn.innerHTML = `${m}월 <span class="cnt">${c[m]}</span>`;
+        else btn.textContent = `${m}월`;
+    });
+}
+
+// ======================== UPLOAD ========================
+function setupUpload() {
+    const box = document.getElementById('uploadBox');
+    const inp = document.getElementById('fileInput');
+
+    box.onclick = e => {
+        if (!['INPUT','BUTTON'].includes(e.target.tagName)) inp.click();
+    };
+
+    box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('dragover'); });
+    box.addEventListener('dragleave', () => box.classList.remove('dragover'));
+    box.addEventListener('drop', e => { e.preventDefault(); box.classList.remove('dragover'); pickFiles(e.dataTransfer.files); });
+    inp.addEventListener('change', e => pickFiles(e.target.files));
+}
+
+function pickFiles(files) {
+    selectedFiles = [...files].filter(f => f.type.startsWith('image/') && f.size <= 10*1024*1024);
+    if (!selectedFiles.length) return toast('이미지만 가능 (최대 10MB)', 'error');
+
+    const wrap = document.getElementById('uploadPreview');
+    wrap.innerHTML = '';
+
+    selectedFiles.forEach((f, i) => {
+        const r = new FileReader();
+        r.onload = e => {
+            const d = document.createElement('div');
+            d.className = 'thumb-wrap';
+            d.innerHTML = `<img class="thumb" src="${e.target.result}"><button class="thumb-remove" onclick="removeFile(${i})">&times;</button>`;
+            wrap.appendChild(d);
+        };
+        r.readAsDataURL(f);
+    });
+
+    document.getElementById('uploadBtn').style.display = 'inline-block';
+}
+
+function removeFile(i) {
+    selectedFiles.splice(i, 1);
+    if (!selectedFiles.length) {
+        document.getElementById('uploadPreview').innerHTML = '';
+        document.getElementById('uploadBtn').style.display = 'none';
+        return;
+    }
+    // re-render
+    pickFiles(selectedFiles);
+}
+
+async function uploadPhotos() {
+    if (!selectedFiles.length) return;
+
+    const caption = document.getElementById('photoCaption').value.trim();
+    const btn = document.getElementById('uploadBtn');
+    const wrap = document.getElementById('progressWrap');
+    const fill = document.getElementById('progressFill');
+    const txt = document.getElementById('progressText');
+
+    btn.disabled = true;
+    wrap.style.display = 'block';
+    let done = 0;
+    const total = selectedFiles.length;
+
+    try {
+        for (const file of selectedFiles) {
+            const ts = Date.now();
+            const path = `photos/${ts}_${Math.random().toString(36).slice(2)}`;
+            const ref = storage.ref(path);
+            await ref.put(file);
+            const url = await ref.getDownloadURL();
+
+            await db.collection('photos').add({
+                url, storagePath: path,
+                caption: caption || '',
+                uploader: currentUser,
+                timestamp: ts,
+                commentCount: 0
+            });
+
+            done++;
+            fill.style.width = `${(done/total)*100}%`;
+            txt.textContent = `${done} / ${total}`;
+        }
+
+        toast(`${done}장 업로드 완료!`, 'success');
+        resetUpload();
+        loadPhotos();
+    } catch (e) {
+        console.error(e);
+        toast('업로드 실패: ' + e.message, 'error');
+    }
+
+    btn.disabled = false;
+}
+
+function resetUpload() {
+    selectedFiles = [];
+    document.getElementById('uploadPreview').innerHTML = '';
+    document.getElementById('uploadBtn').style.display = 'none';
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressText').textContent = '';
+    document.getElementById('photoCaption').value = '';
+    document.getElementById('fileInput').value = '';
+}
+
+// ======================== LOAD & RENDER ========================
+async function loadPhotos() {
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    try {
+        const snap = await db.collection('photos').orderBy('timestamp', 'desc').get();
+        allPhotos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        updateCounts();
+        renderPhotos();
+    } catch (e) {
+        console.error(e);
+        toast('사진 로딩 실패', 'error');
+    }
+
+    document.getElementById('loadingSpinner').style.display = 'none';
+}
+
+function renderPhotos() {
+    const grid = document.getElementById('photoGrid');
+    const empty = document.getElementById('emptyState');
+
+    filtered = curMonth === 'all'
+        ? allPhotos
+        : allPhotos.filter(p => new Date(p.timestamp).getMonth() + 1 === curMonth);
+
+    document.getElementById('photoCnt').textContent = `${filtered.length}장`;
+
+    if (!filtered.length) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    grid.innerHTML = filtered.map((p, i) => `
+        <div class="photo-card" id="card-${p.id}">
+            <div class="img-wrap" onclick="openLB(${i})">
+                <img src="${p.url}" alt="${esc(p.caption)}" loading="lazy">
+                <div class="date-badge">${fmtDate(p.timestamp)}</div>
+            </div>
+            <div class="card-body">
+                ${p.caption ? `<div class="caption">${esc(p.caption)}</div>` : ''}
+                <div class="uploader-row">
+                    <span class="uploader">${esc(p.uploader)}</span>
+                    <button class="delete-btn" onclick="deletePhoto('${p.id}','${p.storagePath}')">삭제</button>
+                </div>
+            </div>
+            <div class="comments-section">
+                <button class="comments-toggle" onclick="toggleComments('${p.id}')">
+                    댓글 ${p.commentCount || 0}개
+                </button>
+                <div class="comments-list" id="cl-${p.id}"></div>
+                <div class="comment-form">
+                    <input type="text" id="ci-${p.id}" placeholder="댓글을 입력하세요..."
+                           onkeydown="if(event.key==='Enter')addComment('${p.id}')">
+                    <button onclick="addComment('${p.id}')">등록</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ======================== COMMENTS ========================
+async function toggleComments(photoId) {
+    const list = document.getElementById('cl-' + photoId);
+    if (list.classList.contains('open')) {
+        list.classList.remove('open');
+        return;
+    }
+
+    list.innerHTML = '<div style="text-align:center;padding:10px;color:#ccc;">불러오는 중...</div>';
+    list.classList.add('open');
+
+    try {
+        const snap = await db.collection('photos').doc(photoId)
+            .collection('comments').orderBy('timestamp', 'asc').get();
+
+        if (snap.empty) {
+            list.innerHTML = '<div style="padding:8px;color:#ccc;font-size:0.85em;">아직 댓글이 없습니다.</div>';
+            return;
+        }
+
+        list.innerHTML = snap.docs.map(d => {
+            const c = d.data();
+            const col = getColor(c.author);
+            const initials = c.author.slice(0, 1);
+            return `
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background:${col}">${initials}</div>
+                    <div class="comment-body">
+                        <div class="cname">${esc(c.author)}</div>
+                        <div class="ctext">${esc(c.text)}</div>
+                        <div class="ctime">${fmtDateTime(c.timestamp)}</div>
+                        <button class="cdel" onclick="delComment('${photoId}','${d.id}')">&times;</button>
+                    </div>
+                </div>`;
+        }).join('');
+    } catch (e) {
+        console.error(e);
+        list.innerHTML = '<div style="padding:8px;color:#e53935;font-size:0.85em;">댓글 로딩 실패</div>';
+    }
+}
+
+async function addComment(photoId) {
+    const input = document.getElementById('ci-' + photoId);
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+
+    try {
+        await db.collection('photos').doc(photoId).collection('comments').add({
+            author: currentUser,
+            text,
+            timestamp: Date.now()
+        });
+
+        // Update count
+        const snap = await db.collection('photos').doc(photoId).collection('comments').get();
+        await db.collection('photos').doc(photoId).update({ commentCount: snap.size });
+
+        // Update local
+        const p = allPhotos.find(x => x.id === photoId);
+        if (p) p.commentCount = snap.size;
+
+        // Update toggle text
+        const card = document.getElementById('card-' + photoId);
+        if (card) {
+            const tog = card.querySelector('.comments-toggle');
+            if (tog) tog.textContent = `댓글 ${snap.size}개`;
+        }
+
+        // Refresh comments
+        const list = document.getElementById('cl-' + photoId);
+        list.classList.remove('open');
+        toggleComments(photoId);
+    } catch (e) {
+        console.error(e);
+        toast('댓글 작성 실패', 'error');
+    }
+}
+
+async function delComment(photoId, commentId) {
+    if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
+
+    try {
+        await db.collection('photos').doc(photoId).collection('comments').doc(commentId).delete();
+
+        const snap = await db.collection('photos').doc(photoId).collection('comments').get();
+        await db.collection('photos').doc(photoId).update({ commentCount: snap.size });
+
+        const p = allPhotos.find(x => x.id === photoId);
+        if (p) p.commentCount = snap.size;
+
+        const card = document.getElementById('card-' + photoId);
+        if (card) {
+            const tog = card.querySelector('.comments-toggle');
+            if (tog) tog.textContent = `댓글 ${snap.size}개`;
+        }
+
+        const list = document.getElementById('cl-' + photoId);
+        list.classList.remove('open');
+        toggleComments(photoId);
+
+        toast('댓글 삭제됨', 'success');
+    } catch (e) {
+        console.error(e);
+        toast('삭제 실패', 'error');
+    }
+}
+
+// ======================== DELETE PHOTO ========================
+async function deletePhoto(id, path) {
+    if (!confirm('이 사진과 모든 댓글을 삭제하시겠습니까?')) return;
+
+    try {
+        // Delete comments subcollection
+        const comments = await db.collection('photos').doc(id).collection('comments').get();
+        const batch = db.batch();
+        comments.docs.forEach(d => batch.delete(d.ref));
+        await batch.commit();
+
+        await db.collection('photos').doc(id).delete();
+        if (path) await storage.ref(path).delete();
+
+        toast('사진 삭제됨', 'success');
+        loadPhotos();
+    } catch (e) {
+        console.error(e);
+        toast('삭제 실패', 'error');
+    }
+}
+
+// ======================== ADMIN ========================
+function toggleAdmin() {
+    if (!isAdmin) {
+        const pw = prompt('관리자 비밀번호:');
+        const cfg = getConfig();
+        if (pw === cfg.adminPw) {
+            isAdmin = true;
+            document.body.classList.add('admin-mode');
+            document.getElementById('adminBtn').textContent = '관리자 모드 해제';
+            document.getElementById('settingsBtn').style.display = 'inline-block';
+            toast('관리자 모드 활성화', 'success');
+        } else {
+            toast('비밀번호가 틀렸습니다', 'error');
+        }
+    } else {
+        isAdmin = false;
+        document.body.classList.remove('admin-mode');
+        document.getElementById('adminBtn').textContent = '관리자 모드';
+        document.getElementById('settingsBtn').style.display = 'none';
+    }
+}
+
+function openSettings() {
+    const cfg = getConfig();
+    const newTitle = prompt('앨범 제목:', cfg.title);
+    if (newTitle !== null) cfg.title = newTitle;
+
+    const newCode = prompt('입장 코드:', cfg.accessCode);
+    if (newCode !== null && newCode.trim()) cfg.accessCode = newCode.trim();
+
+    const newPw = prompt('관리자 비밀번호:', cfg.adminPw);
+    if (newPw !== null && newPw.trim()) cfg.adminPw = newPw.trim();
+
+    localStorage.setItem('album_config', JSON.stringify(cfg));
+    document.getElementById('appTitle').textContent = cfg.title;
+    document.title = cfg.title;
+    toast('설정이 저장되었습니다', 'success');
+}
+
+// ======================== LIGHTBOX ========================
+function openLB(i) {
+    lbIndex = i;
+    const p = filtered[i];
+    document.getElementById('lbImg').src = p.url;
+    document.getElementById('lbCaption').textContent =
+        `${p.caption ? p.caption + ' — ' : ''}${p.uploader} (${fmtDate(p.timestamp)})`;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLB() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function navLB(dir) {
+    lbIndex = (lbIndex + dir + filtered.length) % filtered.length;
+    openLB(lbIndex);
+}
+
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('active')) return;
+    if (e.key === 'Escape') closeLB();
+    if (e.key === 'ArrowLeft') navLB(-1);
+    if (e.key === 'ArrowRight') navLB(1);
+});
+
+document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === document.getElementById('lightbox')) closeLB();
+});
+
+// ======================== UTILS ========================
+function fmtDate(ts) {
+    const d = new Date(ts);
+    return `${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`;
+}
+
+function fmtDateTime(ts) {
+    const d = new Date(ts);
+    return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function esc(s) {
+    if (!s) return '';
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+function toast(msg, type = 'info') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
